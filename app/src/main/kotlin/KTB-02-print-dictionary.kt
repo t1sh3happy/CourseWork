@@ -4,21 +4,8 @@ const val ERROR_CONDITION = -1
 
 fun main() {
 
-//    val wordsFile: File = File("words.txt")
-//    wordsFile.createNewFile()
-//    wordsFile.writeText("hello привет\n")
-//    wordsFile.appendText("dog собака\n")
-//    wordsFile.appendText("cat кошка\n")
-//    val dictionary = mutableListOf<Word>()
-//    val lines: List<String> = wordsFile.readLines()
-//
-//    for (line in lines) {
-//        val parts = line.split("|")
-//        val word =
-//            Word(text = parts[0], translate = parts[1], correctAnswersCount = parts.getOrNull(2)?.toIntOrNull() ?: 0)
-//        dictionary.add(word)
-//    }
-//    println(dictionary)
+    val dictionary = loadDictionary()
+
     while (true) {
         println(
             "Меню: \n" +
@@ -33,16 +20,31 @@ fun main() {
                 println("Завершение работы")
                 break
             }
-
             1 -> println("Учить слова")
             2 -> println("Статистика")
-            else -> println("Неверный ввод")
+            else -> println("Введите число 1, 2 или 0")
         }
     }
+
+
 }
 
-//data class Word(
-//    val text: String,
-//    val translate: String,
-//    var correctAnswersCount: Int = 0,
-//)
+data class Word(
+    val text: String,
+    val translate: String,
+    var correctAnswersCount: Int = 0,
+)
+
+fun loadDictionary(): MutableList<Word> {
+    val wordsFile: File = File("words.txt")
+    val dictionary = mutableListOf<Word>()
+    val lines: List<String> = wordsFile.readLines()
+
+    for (line in lines) {
+        val parts = line.split("|")
+        val word =
+            Word(text = parts[0], translate = parts[1], correctAnswersCount = parts.getOrNull(2)?.toIntOrNull() ?: 0)
+        dictionary.add(word)
+    }
+    return dictionary
+}
