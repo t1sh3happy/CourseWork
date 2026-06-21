@@ -1,4 +1,5 @@
 import java.io.File
+import kotlin.collections.filter
 
 const val ERROR_CONDITION = -1
 
@@ -18,10 +19,22 @@ fun main() {
         when (state) {
             0 -> {
                 println("Завершение работы")
-                break
+                return
             }
+
             1 -> println("Учить слова")
-            2 -> println("Статистика")
+            2 -> {
+                val learnedCount = dictionary.filter { it.correctAnswersCount >= 3 }.size
+                var total = 0
+                for (word in dictionary) {
+                    total++
+                }
+                println("Общее количество слов $total")
+                val percentage = learnedCount * 100 / total
+                println("Выучено $learnedCount из $total слов | $percentage %")
+
+            }
+
             else -> println("Введите число 1, 2 или 0")
         }
     }
