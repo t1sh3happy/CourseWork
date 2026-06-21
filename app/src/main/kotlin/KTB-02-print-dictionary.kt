@@ -29,7 +29,6 @@ fun main() {
                 for (word in dictionary) {
                     total++
                 }
-                println("Общее количество слов $total")
                 val percentage = learnedCount * 100 / total
                 println("Выучено $learnedCount из $total слов | $percentage %")
 
