@@ -31,12 +31,12 @@ fun main() {
                     val questionWords = notLearnedList.shuffled().take(4)
 
                     val correctAnswer = questionWords.random()
-                    println("Введите номер перевода слова ${correctAnswer.text}")
+                    println("${correctAnswer.text}:")
                     println(
-                        "1. ${questionWords[0].translate} " +
-                                "2. ${questionWords[1].translate} " +
-                                "3. ${questionWords[2].translate} " +
-                                "4. ${questionWords[3].translate} "
+                        "1 - ${questionWords[0].translate} " +
+                                "2 - ${questionWords[1].translate} " +
+                                "3 - ${questionWords[2].translate} " +
+                                "4 - ${questionWords[3].translate} "
                     )
                     var answer = readln().toIntOrNull() ?: ERROR_CONDITION
                     while (answer != questionWords.indexOf(correctAnswer) + 1) {
