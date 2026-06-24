@@ -1,3 +1,12 @@
 hello|привет|0
-dog|собака|1
+dog|собака|5
 cat|кошка|7
+window|окно|0
+flat|квартира|0
+leg|нога|0
+elephant|слон|2
+tee|тройник|3
+fuel|топливо|1
+refueling|заправка|0
+giraffe|жираф|2
+coherence|когерентность|0
