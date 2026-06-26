@@ -2,6 +2,7 @@ import java.io.File
 
 
 const val ERROR_CONDITION = -1
+const val NUMBER_OF_ANSWERS = 4
 
 fun main() {
 
@@ -28,7 +29,14 @@ fun main() {
                     continue
                 } else {
                     val notLearnedList = dictionary.filter { it.correctAnswersCount < 3 }
-                    val questionWords = notLearnedList.shuffled().take(4)
+                    val questionWords: List<Word>
+                    if (notLearnedList.size >= NUMBER_OF_ANSWERS) {
+                        questionWords = notLearnedList.shuffled().take(NUMBER_OF_ANSWERS)
+                    } else {
+                        val extra = (dictionary - notLearnedList.toList()).shuffled()
+                            .take(NUMBER_OF_ANSWERS - notLearnedList.size)
+                        questionWords = (notLearnedList + extra).shuffled()
+                    }
 
                     val correctAnswer = questionWords.random()
                     println("${correctAnswer.text}:")
