@@ -38,7 +38,7 @@ fun main() {
                         questionWords = (notLearnedList + extra).shuffled()
                     }
 
-                    val correctAnswer = questionWords.random()
+                    val correctAnswer = notLearnedList.random()
                     println("${correctAnswer.text}:")
                     println(
                         "1 - ${questionWords[0].translate} " +
