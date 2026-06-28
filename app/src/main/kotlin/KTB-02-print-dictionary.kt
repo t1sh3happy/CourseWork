@@ -2,6 +2,7 @@ import java.io.File
 
 
 const val ERROR_CONDITION = -1
+const val NUMBER_OF_ANSWERS = 4
 
 fun main() {
 
@@ -22,7 +23,39 @@ fun main() {
                 return
             }
 
-            1 -> println("Учить слова")
+            1 -> {
+                if (dictionary.filter { it.correctAnswersCount < 3 }.isEmpty()) {
+                    println("Все слова выучены")
+                    continue
+                } else {
+                    val notLearnedList = dictionary.filter { it.correctAnswersCount < 3 }
+                    val questionWords: List<Word>
+                    if (notLearnedList.size >= NUMBER_OF_ANSWERS) {
+                        questionWords = notLearnedList.shuffled().take(NUMBER_OF_ANSWERS)
+                    } else {
+                        val extra = (dictionary - notLearnedList.toList()).shuffled()
+                            .take(NUMBER_OF_ANSWERS - notLearnedList.size)
+                        questionWords = (notLearnedList + extra).shuffled()
+                    }
+
+                    val correctAnswer = notLearnedList.random()
+                    println("${correctAnswer.text}:")
+                    println(
+                        "1 - ${questionWords[0].translate} " +
+                                "2 - ${questionWords[1].translate} " +
+                                "3 - ${questionWords[2].translate} " +
+                                "4 - ${questionWords[3].translate} "
+                    )
+                    var answer = readln().toIntOrNull() ?: ERROR_CONDITION
+                    while (answer != questionWords.indexOf(correctAnswer) + 1) {
+                        println("Вы ошиблись, повторите попытку")
+                        answer = readln().toIntOrNull() ?: ERROR_CONDITION
+                    }
+                    println("Вы угадали слово")
+                }
+
+            }
+
             2 -> {
                 val learnedCount = dictionary.filter { it.correctAnswersCount >= 3 }.size
                 val total = dictionary.size
