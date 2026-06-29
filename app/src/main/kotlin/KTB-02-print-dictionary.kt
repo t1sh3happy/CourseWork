@@ -5,7 +5,6 @@ const val ERROR_CONDITION = -1
 const val NUMBER_OF_ANSWERS = 4
 
 fun main() {
-
     val dictionary = loadDictionary()
 
     while (true) {
@@ -39,19 +38,27 @@ fun main() {
                     }
 
                     val correctAnswer = notLearnedList.random()
+                    val correctAnswerId = questionWords.indexOf(correctAnswer) + 1
                     println("${correctAnswer.text}:")
                     println(
-                        "1 - ${questionWords[0].translate} " +
-                                "2 - ${questionWords[1].translate} " +
-                                "3 - ${questionWords[2].translate} " +
-                                "4 - ${questionWords[3].translate} "
+                                "1 - ${questionWords[0].translate}\n" +
+                                "2 - ${questionWords[1].translate}\n" +
+                                "3 - ${questionWords[2].translate}\n" +
+                                "4 - ${questionWords[3].translate}\n" +
+                                "----------\n" +
+                                "0 - Меню"
                     )
-                    var answer = readln().toIntOrNull() ?: ERROR_CONDITION
-                    while (answer != questionWords.indexOf(correctAnswer) + 1) {
-                        println("Вы ошиблись, повторите попытку")
-                        answer = readln().toIntOrNull() ?: ERROR_CONDITION
+                    val userAnswerInput = readln().toIntOrNull() ?: ERROR_CONDITION
+                    if (userAnswerInput == 0) {
+                        continue
                     }
-                    println("Вы угадали слово")
+                    if (userAnswerInput != correctAnswerId) {
+                        println("Неправильно! ${correctAnswer.text} - это ${correctAnswer.translate}")
+                        continue
+                    }
+                    println("Правильно!")
+                    correctAnswer.correctAnswersCount++
+                    saveDictionary(dictionary)
                 }
 
             }
@@ -92,4 +99,12 @@ fun loadDictionary(): MutableList<Word> {
         dictionary.add(word)
     }
     return dictionary
+}
+
+fun saveDictionary(dictionary: List<Word>) {
+    val wordsFile: File = File("words.txt")
+    val content =
+        dictionary.joinToString(separator = "\n")
+        { word -> "${word.text}|${word.translate}|${word.correctAnswersCount}" }
+    wordsFile.writeText(content)
 }
