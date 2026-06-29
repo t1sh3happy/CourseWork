@@ -24,11 +24,9 @@ class LearnWordTrainer {
     fun getNextQuestion(): Question? {
         val notLearnedList = dictionary.filter { it.correctAnswersCount < 3 }
         if (notLearnedList.isEmpty()) return null
-
         val correctAnswer = notLearnedList.random()
         val distractors = (dictionary - correctAnswer).shuffled().take(NUMBER_OF_ANSWERS - 1)
         val questionWords = (listOf(correctAnswer) + distractors).shuffled()
-
         question = Question(variants = questionWords, correctAnswer = correctAnswer)
         return question
 
@@ -45,8 +43,6 @@ class LearnWordTrainer {
             } else {
                 false
             }
-
-
         } ?: false
     }
 

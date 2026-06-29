@@ -12,7 +12,6 @@ fun Question.asConsoleString(): String {
         .mapIndexed { index: Int, word: Word -> "${index + 1}. ${word.translate}" }
         .joinToString(separator = "\n")
     return "${this.correctAnswer.text}:\n$variants\n----------\n0 - Меню"
-
 }
 
 fun main() {
