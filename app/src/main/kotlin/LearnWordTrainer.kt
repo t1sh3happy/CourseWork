@@ -25,9 +25,19 @@ class LearnWordTrainer {
         val notLearnedList = dictionary.filter { it.correctAnswersCount < 3 }
         if (notLearnedList.isEmpty()) return null
         val correctAnswer = notLearnedList.random()
-        val distractors = (dictionary - correctAnswer).shuffled().take(NUMBER_OF_ANSWERS - 1)
-        val questionWords = (listOf(correctAnswer) + distractors).shuffled()
-        question = Question(variants = questionWords, correctAnswer = correctAnswer)
+        val otherNotLearned = notLearnedList - correctAnswer
+        val variants = if (otherNotLearned.size >= NUMBER_OF_ANSWERS - 1) {
+            listOf(correctAnswer) + otherNotLearned.shuffled().take(NUMBER_OF_ANSWERS - 1)
+        } else {
+            val leanedExtra = (dictionary - notLearnedList
+                .toSet())
+                .shuffled()
+                .take(NUMBER_OF_ANSWERS - 1 - otherNotLearned.size)
+
+            (listOf(correctAnswer) + otherNotLearned + leanedExtra).shuffled()
+        }
+
+        question = Question(variants = variants, correctAnswer = correctAnswer)
         return question
 
     }
