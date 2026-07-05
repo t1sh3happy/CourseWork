@@ -27,7 +27,7 @@ class LearnWordTrainer {
         val correctAnswer = notLearnedList.random()
         val otherNotLearned = notLearnedList - correctAnswer
         val variants = if (otherNotLearned.size >= NUMBER_OF_ANSWERS - 1) {
-            listOf(correctAnswer) + otherNotLearned.shuffled().take(NUMBER_OF_ANSWERS - 1)
+            (listOf(correctAnswer) + otherNotLearned.shuffled().take(NUMBER_OF_ANSWERS - 1)).shuffled()
         } else {
             val learnedExtra = (dictionary - notLearnedList
                 .toSet())

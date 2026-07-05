@@ -2,3 +2,7 @@ hello|привет|3
 dog|собака|3
 cat|кошка|3
 window|окно|3
+addition|сложение|0
+subtraction|вычитание|1
+multiplication|умножение|2
+division|деление|0
