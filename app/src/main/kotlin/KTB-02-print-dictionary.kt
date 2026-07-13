@@ -15,7 +15,13 @@ fun Question.asConsoleString(): String {
 }
 
 fun main() {
-    val trainer = LearnWordTrainer()
+
+    val trainer = try {
+        LearnWordTrainer(3)
+    } catch (e:Exception) {
+        println("Невозможно загрузить словарь")
+        return
+    }
 
     while (true) {
         println(
@@ -32,19 +38,24 @@ fun main() {
             }
 
             1 -> {
+                while (true){
                 val question = trainer.getNextQuestion()
                 if (question == null) {
                     println("Все слова выучены")
-                    continue
+                    break
                 } else {
                     println(question.asConsoleString())
 
                     val userAnswerInput = readln().toIntOrNull() ?: ERROR_CONDITION
-                    if (userAnswerInput == 0) continue
+
+                    if (userAnswerInput == 0) break
 
                     if (trainer.checkAnswer(userAnswerInput.minus(1))) {
                         println("Правильно!")
-                    } else println("Неправильно! ${question.correctAnswer.text} - это ${question.correctAnswer.translate}")
+                    } else {
+                        println("Неправильно! ${question.correctAnswer.text} - это ${question.correctAnswer.translate}")
+                    }
+                }
                 }
             }
 

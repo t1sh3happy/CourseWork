@@ -1,8 +1,8 @@
 hello|привет|3
-dog|собака|3
-cat|кошка|3
-window|окно|3
-addition|сложение|0
-subtraction|вычитание|1
-multiplication|умножение|2
-division|деление|0
+dog|собака|1
+cat|кошка|2
+window|окно|1
+addition|сложение|1
+subtraction|вычитание|3
+multiplication|умножение|1
+division|деление|4
