@@ -5,4 +5,4 @@ window|окно|1
 addition|сложение|1
 subtraction|вычитание|3
 multiplication|умножение|1
-division|деление|4
+division|деление|2
