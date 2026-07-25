@@ -15,8 +15,8 @@ fun main(args: Array<String>) {
         val updates : String = getUpdates(botToken, updateId)
         println(updates)
 
-        val startUpdateId = updates.lastIndexOf("update_id")
-        val endUpdateId = updates.lastIndexOf(",\n\"message\"")
+        val startUpdateId = updates.indexOf("update_id")
+        val endUpdateId = updates.indexOf(",\n\"message\"")
         if(startUpdateId == -1 || endUpdateId == -1) continue
         val updateIdString = updates.substring(startUpdateId + 11, endUpdateId)
         updateId = updateIdString.toInt() + 1
