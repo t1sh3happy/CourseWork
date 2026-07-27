@@ -9,28 +9,22 @@ fun main(args: Array<String>) {
 
     val botToken: String = args[0]
     var updateId = 0
-    val updateIdRegex: Regex = Regex(""""update_id":(\d+)""")
+    val updateIdRegex = Regex(""""update_id":(\d+)""")
+    val messageRegex = Regex("\"text\":\"(.+?)\"")
 
 
     while (true) {
         Thread.sleep(2000)
         val updates : String = getUpdates(botToken, updateId)
+        val searchebleId = updateIdRegex.find(updates)?.groups?.get(1)?.value ?: continue
+        val message = messageRegex.find(updates)?.groups?.get(1)?.value
         println(updates)
+        println(message)
+        println(searchebleId)
 
-        updateIdRegex.findAll(updates)
-        if(id == null) continue
+        updateId = searchebleId.toInt() + 1
 
 
-
-
-//        val startUpdateId = updates.indexOf("update_id")
-//        val endUpdateId = updates.indexOf(",", startUpdateId)
-//        if(startUpdateId == -1 || endUpdateId == -1) continue
-//        val updateIdString = updates.substring(startUpdateId + 11, endUpdateId)
-//        updateId = updateIdString.toInt() + 1
-
-//        val updateIdRegex: Regex = '\\'
-//        updateId = lastUpdateId
     }
 }
 
