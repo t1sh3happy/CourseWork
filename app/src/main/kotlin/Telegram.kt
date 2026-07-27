@@ -17,7 +17,7 @@ fun main(args: Array<String>) {
         Thread.sleep(2000)
         val updates : String = getUpdates(botToken, updateId)
         val searchebleId = updateIdRegex.find(updates)?.groups?.get(1)?.value ?: continue
-        val message = messageRegex.find(updates)?.groups?.get(1)?.value
+        val message = messageRegex.find(updates)?.groups?.get(1)?.value ?: continue
         println(message)
         println(searchebleId)
 
