@@ -1,5 +1,4 @@
 
-const val TELEGRAM_BASE_URL = "https://api.telegram.org/bot"
 
 fun main(args: Array<String>) {
 
@@ -7,7 +6,7 @@ fun main(args: Array<String>) {
     var updateId = 0
     val updateIdRegex = Regex(""""update_id":\s*(\d+)""")
     val messageRegex = Regex("\"text\":\"(.+?)\"")
-    val chatIdRegex = Regex(""""id":\s*(\d+)""")
+    val chatIdRegex = Regex(""""chat":\{"id":\s*(\d+)""")
 
 
     while (true) {
@@ -17,6 +16,9 @@ fun main(args: Array<String>) {
         val message = messageRegex.find(updates)?.groups?.get(1)?.value ?: continue
         val chatId = chatIdRegex.find(updates)?.groups?.get(1)?.value?.toInt() ?: continue
         val text: String
+        println(searchebleId)
+        println(updates)
+        println(chatId)
 
         if (message == "Hello") {
             text = "Hello"
