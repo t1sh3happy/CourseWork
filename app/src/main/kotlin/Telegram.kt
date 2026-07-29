@@ -1,5 +1,3 @@
-
-
 fun main(args: Array<String>) {
 
     val botToken: String = args[0]
@@ -10,11 +8,12 @@ fun main(args: Array<String>) {
 
 
     while (true) {
+        val telegramBotService = TelegramBotService(botToken)
         Thread.sleep(2000)
-        val updates: String = getUpdates(botToken, updateId)
+        val updates: String = telegramBotService.getUpdates(botToken, updateId)
         val searchebleId = updateIdRegex.find(updates)?.groups?.get(1)?.value ?: continue
         val message = messageRegex.find(updates)?.groups?.get(1)?.value ?: continue
-        val chatId = chatIdRegex.find(updates)?.groups?.get(1)?.value?.toInt() ?: continue
+        val chatId = chatIdRegex.find(updates)?.groups?.get(1)?.value?.toLong() ?: continue
         val text: String
         println(searchebleId)
         println(updates)
@@ -22,7 +21,7 @@ fun main(args: Array<String>) {
 
         if (message == "Hello") {
             text = "Hello"
-            sendMessage(botToken, chatId, text)
+            telegramBotService.sendMessage(botToken, chatId, text)
         }
 
         updateId = searchebleId.toInt() + 1
