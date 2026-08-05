@@ -1,11 +1,6 @@
 const val ERROR_CONDITION = -1
 const val NUMBER_OF_ANSWERS = 4
 
-data class Word(
-    val text: String,
-    val translate: String,
-    var correctAnswersCount: Int = 0,
-)
 
 fun Question.asConsoleString(): String {
     val variants = this.variants
@@ -18,7 +13,7 @@ fun main() {
 
     val trainer = try {
         LearnWordTrainer()
-    } catch (e:Exception) {
+    } catch (e: Exception) {
         println("Невозможно загрузить словарь")
         return
     }
@@ -38,24 +33,24 @@ fun main() {
             }
 
             1 -> {
-                while (true){
-                val question = trainer.getNextQuestion()
-                if (question == null) {
-                    println("Все слова выучены")
-                    break
-                } else {
-                    println(question.asConsoleString())
-
-                    val userAnswerInput = readln().toIntOrNull() ?: ERROR_CONDITION
-
-                    if (userAnswerInput == 0) break
-
-                    if (trainer.checkAnswer(userAnswerInput.minus(1))) {
-                        println("Правильно!")
+                while (true) {
+                    val question = trainer.getNextQuestion()
+                    if (question == null) {
+                        println("Все слова выучены")
+                        break
                     } else {
-                        println("Неправильно! ${question.correctAnswer.text} - это ${question.correctAnswer.translate}")
+                        println(question.asConsoleString())
+
+                        val userAnswerInput = readln().toIntOrNull() ?: ERROR_CONDITION
+
+                        if (userAnswerInput == 0) break
+
+                        if (trainer.checkAnswer(userAnswerInput.minus(1))) {
+                            println("Правильно!")
+                        } else {
+                            println("Неправильно! ${question.correctAnswer.text} - это ${question.correctAnswer.translate}")
+                        }
                     }
-                }
                 }
             }
 
@@ -71,6 +66,7 @@ fun main() {
                     )
                 }
             }
+
             else -> println("Введите число 1, 2 или 0")
 
         }
