@@ -9,19 +9,21 @@ fun main(args: Array<String>) {
 
     val botToken: String = args[0]
     var updateId = 0
+    val updateIdRegex = Regex(""""update_id":\s*(\d+)""")
+    val messageRegex = Regex("\"text\":\"(.+?)\"")
+
 
     while (true) {
         Thread.sleep(2000)
         val updates : String = getUpdates(botToken, updateId)
-        println(updates)
+        val searchebleId = updateIdRegex.find(updates)?.groups?.get(1)?.value ?: continue
+        val message = messageRegex.find(updates)?.groups?.get(1)?.value ?: continue
+        println(message)
+        println(searchebleId)
 
-        val startUpdateId = updates.indexOf("update_id")
-        val endUpdateId = updates.indexOf(",", startUpdateId)
-        if(startUpdateId == -1 || endUpdateId == -1) continue
-        val updateIdString = updates.substring(startUpdateId + 11, endUpdateId)
-        updateId = updateIdString.toInt() + 1
+        updateId = searchebleId.toInt() + 1
 
-//        updateId = lastUpdateId
+
     }
 }
 
