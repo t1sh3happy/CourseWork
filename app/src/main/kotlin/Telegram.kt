@@ -7,6 +7,7 @@ fun main(args: Array<String>) {
     val chatIdRegex = Regex(""""chat":\{"id":\s*(\d+)""")
     val dataRegex = Regex("\"data\":\"(.+?)\"")
     val telegramBotService = TelegramBotService(botToken)
+    val learningClick = "learning_click"
 
     while (true) {
 
@@ -17,7 +18,7 @@ fun main(args: Array<String>) {
         val chatId = chatIdRegex.find(updates)?.groups?.get(1)?.value?.toLong() ?: continue
         val data = dataRegex.find(updates)?.groups?.get(1)?.value
         updateId = searchebleId.toInt() + 1
-        val text: String
+        var text: String
         println(searchebleId)
         println(updates)
         println(chatId)
@@ -26,12 +27,12 @@ fun main(args: Array<String>) {
             text = "Hello"
             telegramBotService.sendMessage(botToken, chatId, text)
         }
-        if (message?.lowercase() == "menu" && chatId != null) {
+        if (message == "/start" && chatId != null) {
               telegramBotService.sendMenu(botToken, chatId)
         }
-        if (data?.lowercase() == "chat" && chatId != null) {
-            telegramBotService.sendMessage(botToken, chatId, data)
-        }
+        if (data?.lowercase() == learningClick && chatId != null) {
+            println("Учимся")
+        }else println("Статистика")
 
     }
 
