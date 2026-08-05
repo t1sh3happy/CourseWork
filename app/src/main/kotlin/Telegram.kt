@@ -6,8 +6,8 @@ fun main(args: Array<String>) {
     val messageRegex = Regex("\"text\":\"(.+?)\"")
     val chatIdRegex = Regex(""""chat":\{"id":\s*(\d+)""")
     val dataRegex = Regex("\"data\":\"(.+?)\"")
+    val learnWordTrainer = LearnWordTrainer()
     val telegramBotService = TelegramBotService(botToken)
-    val learningClick = "learning_click"
 
     while (true) {
 
@@ -30,8 +30,8 @@ fun main(args: Array<String>) {
         if (message == "/start" && chatId != null) {
               telegramBotService.sendMenu(botToken, chatId)
         }
-        if (data?.lowercase() == learningClick && chatId != null) {
-            println("Учимся")
+        if (data?.lowercase() == CALLBACK_LEARN_WORDS && chatId != null) {
+            telegramBotService.sendMessage(botToken, chatId, "Учимся")
         }else println("Статистика")
 
     }
