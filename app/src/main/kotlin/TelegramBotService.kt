@@ -30,9 +30,10 @@ class TelegramBotService(private val botToken: String) {
         val urlSendMessage: String =
             TELEGRAM_BASE_URL + botToken + "/sendMessage?chat_id=$chatId&text=${URLEncoder.encode(text, "UTF-8")}"
         val request2: HttpRequest = HttpRequest.newBuilder().uri(URI.create(urlSendMessage)).build()
+        client.send(request2, HttpResponse.BodyHandlers.ofString())
     }
 
-    fun sendMenu(botToken: String, chatId: Long): String {
+    fun sendMenu(botToken: String, chatId: Long){
         val urlSendMessage: String = TELEGRAM_BASE_URL + botToken + "/sendMessage"
         val sendMenuBody = """
              {
@@ -58,9 +59,6 @@ class TelegramBotService(private val botToken: String) {
             .header("Content-Type", "application/json")
             .POST(HttpRequest.BodyPublishers.ofString(sendMenuBody))
             .build()
-        val response3: HttpResponse<String> = client.send(request, HttpResponse.BodyHandlers.ofString())
-        return response3.body()
-    }
-
-
+        client.send(request, HttpResponse.BodyHandlers.ofString())
+        }
 }

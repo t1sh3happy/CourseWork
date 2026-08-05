@@ -15,8 +15,9 @@ fun main(args: Array<String>) {
         Thread.sleep(2000)
         val updates: String = telegramBotService.getUpdates(botToken, updateId)
         val searchebleId = updateIdRegex.find(updates)?.groups?.get(1)?.value ?: continue
-        val message = messageRegex.find(updates)?.groups?.get(1)?.value ?: continue
+        updateId = searchebleId.toInt() + 1
         val chatId = chatIdRegex.find(updates)?.groups?.get(1)?.value?.toLong() ?: continue
+        val message = messageRegex.find(updates)?.groups?.get(1)?.value
         val data = dataRegex.find(updates)?.groups?.get(1)?.value
         updateId = searchebleId.toInt() + 1
         var text: String
@@ -35,7 +36,7 @@ fun main(args: Array<String>) {
             telegramBotService.sendMessage(botToken, chatId, "Учимся")
         }
         if (data?.lowercase() == CALLBACK_STATISTICS && chatId != null) {
-            telegramBotService.sendMessage(botToken, chatId, "Cnfnbcnbrf")
+            telegramBotService.sendMessage(botToken, chatId, "Статистика")
 
         }
     }
