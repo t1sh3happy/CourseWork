@@ -1,3 +1,4 @@
+
 fun main(args: Array<String>) {
 
     val botToken: String = args[0]
@@ -28,12 +29,14 @@ fun main(args: Array<String>) {
             telegramBotService.sendMessage(botToken, chatId, text)
         }
         if (message == "/start" && chatId != null) {
-              telegramBotService.sendMenu(botToken, chatId)
+            telegramBotService.sendMenu(botToken, chatId)
         }
         if (data?.lowercase() == CALLBACK_LEARN_WORDS && chatId != null) {
             telegramBotService.sendMessage(botToken, chatId, "Учимся")
-        }else println("Статистика")
+        }
+        if (data?.lowercase() == CALLBACK_STATISTICS && chatId != null) {
+            telegramBotService.sendMessage(botToken, chatId, "Cnfnbcnbrf")
 
+        }
     }
-
 }
