@@ -57,12 +57,12 @@ fun main() {
             2 -> {
                 val statistics = trainer.getStatistics()
 
-                if (statistics.total == 0) {
+                if (statistics.totalCount == 0) {
                     println("Словарь пуст, возврат в меню")
                 } else {
                     println(
-                        "Выучено ${statistics.learnedCount} из ${statistics.total} слов |" +
-                                " ${statistics.learnedCount * 100 / statistics.total} %"
+                        "Выучено ${statistics.learnedCount} из ${statistics.totalCount} слов |" +
+                                " ${statistics.learnedCount * 100 / statistics.totalCount} %"
                     )
                 }
             }
