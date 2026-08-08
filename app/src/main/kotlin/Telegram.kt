@@ -44,11 +44,11 @@ fun main(args: Array<String>) {
 
             val statistics = trainer.getStatistics()
 
-            if (statistics.total == 0) {
+            if (statistics.totalCount == 0) {
                 telegramBotService.sendMessage(botToken, chatId, "Словарь пуст, возврат в меню")
             } else {
                 telegramBotService.sendMessage(
-                    botToken, chatId, "Выучено ${statistics.learnedCount} из ${statistics.total} слов | " +
+                    botToken, chatId, "Выучено ${statistics.learnedCount} из ${statistics.totalCount} слов | " +
                             "${statistics.percent} %"
                 )
 
