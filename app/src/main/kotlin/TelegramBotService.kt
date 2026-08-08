@@ -8,33 +8,32 @@ import kotlinx.serialization.json.Json
 const val CLICKED_LEARN_WORDS = "learning_click"
 const val CLICKED_STATISTICS = "statistic_click"
 const val TELEGRAM_BASE_URL = "https://api.telegram.org/bot"
-
+const val CALLBACK_DATA_ANSWER_PREFIX = "answer_"
 
 
 class TelegramBotService(private val botToken: String) {
 
 
-
-
     private val client: HttpClient = HttpClient.newBuilder().build()
     private val json = Json { ignoreUnknownKeys = true }
 
-    fun getUpdates(botToken: String, updateId: Int): String {
+    fun getUpdates(updateId: Int): String {
         val urlGetUpdates: String = TELEGRAM_BASE_URL + botToken + "/getUpdates?offset=$updateId"
         val request1: HttpRequest = HttpRequest.newBuilder().uri(URI.create(urlGetUpdates)).build()
         val response1: HttpResponse<String> = client.send(request1, HttpResponse.BodyHandlers.ofString())
         return response1.body()
     }
 
-    fun sendMessage(botToken: String, chatId: Long, text: String) {
+    fun sendMessage(chatId: Long, text: String) {
         val urlSendMessage: String =
             TELEGRAM_BASE_URL + botToken + "/sendMessage?chat_id=$chatId&text=${URLEncoder.encode(text, "UTF-8")}"
         val request2: HttpRequest = HttpRequest.newBuilder().uri(URI.create(urlSendMessage)).build()
         client.send(request2, HttpResponse.BodyHandlers.ofString())
     }
 
-    fun sendMenu(botToken: String, chatId: Long){
+    fun sendMenu(chatId: Long) {
         val urlSendMessage: String = TELEGRAM_BASE_URL + botToken + "/sendMessage"
+
         val sendMenuBody = """
              {
                 "chat_id": $chatId,
@@ -60,5 +59,52 @@ class TelegramBotService(private val botToken: String) {
             .POST(HttpRequest.BodyPublishers.ofString(sendMenuBody))
             .build()
         client.send(request, HttpResponse.BodyHandlers.ofString())
-        }
+
+    }
+
+    fun sendQuestion(chatId: Long, question: Question) {
+        val urlSendQuestion: String = TELEGRAM_BASE_URL + botToken + "/sendMessage"
+        val text = "Как переводится: ${question.correctAnswer.text}?"
+
+        val sendMenuBody = """
+             {
+                "chat_id": $chatId,
+                "text": "$text",
+                "reply_markup": {
+                    "inline_keyboard": [
+                        [
+                        {
+                           "text": "${question.variants[0].translate}",
+                           "callback_data": "${CALLBACK_DATA_ANSWER_PREFIX}0"
+                        },
+                        {
+                           "text": "${question.variants[1].translate}",
+                           "callback_data": "${CALLBACK_DATA_ANSWER_PREFIX}1"
+                        }
+                        ]
+                        ,
+                        [
+                        {
+                           "text": "${question.variants[2].translate}",
+                           "callback_data": "${CALLBACK_DATA_ANSWER_PREFIX}2"
+                        },
+                        {
+                           "text": "${question.variants[3].translate}",
+                           "callback_data": "${CALLBACK_DATA_ANSWER_PREFIX}3"
+                        }
+                        ]
+                        
+                    ]
+                }
+             }
+        """.trimIndent()
+        val request: HttpRequest = HttpRequest.newBuilder()
+            .uri(URI.create(urlSendQuestion))
+            .header("Content-Type", "application/json")
+            .POST(HttpRequest.BodyPublishers.ofString(sendMenuBody))
+            .build()
+        client.send(request, HttpResponse.BodyHandlers.ofString())
+
+    }
+
 }

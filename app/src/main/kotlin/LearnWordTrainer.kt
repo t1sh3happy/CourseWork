@@ -64,6 +64,17 @@ class LearnWordTrainer(private val learnedAnswerCount: Int = 3) {
         } ?: false
     }
 
+    fun checkNextQuestionAndSend(
+        trainer: LearnWordTrainer,
+        telegramBotService: TelegramBotService,
+        chatId: Long
+    ) {
+        val question = trainer.getNextQuestion()
+        if (question == null) {
+            telegramBotService.sendMessage(chatId, "Невозможно загрузить словарь")
+        } else telegramBotService.sendQuestion(chatId, question)
+    }
+
     private fun loadDictionary(): MutableList<Word> {
         try {
             val wordsFile = File("words.txt")
