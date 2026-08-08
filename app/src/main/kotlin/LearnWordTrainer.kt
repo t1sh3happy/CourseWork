@@ -3,6 +3,7 @@ import java.io.File
 data class Statistics(
     val learnedCount: Int,
     val total: Int,
+    val percent : Int,
 )
 
 data class Word(
@@ -24,7 +25,8 @@ class LearnWordTrainer(private val learnedAnswerCount: Int = 3) {
     fun getStatistics(): Statistics {
         val learnedCount = dictionary.filter { it.correctAnswersCount >= learnedAnswerCount }.size
         val total = dictionary.size
-        return Statistics(learnedCount, total)
+        val percent = learnedCount * 100 / total
+        return Statistics(learnedCount, total, percent)
     }
 
     fun getNextQuestion(): Question? {

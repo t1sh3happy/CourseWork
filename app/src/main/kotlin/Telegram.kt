@@ -37,10 +37,10 @@ fun main(args: Array<String>) {
         if (message == "/start" && chatId != null) {
             telegramBotService.sendMenu(botToken, chatId)
         }
-        if (data?.lowercase() == CALLBACK_LEARN_WORDS && chatId != null) {
+        if (data?.lowercase() == CLICKED_LEARN_WORDS && chatId != null) {
             telegramBotService.sendMessage(botToken, chatId, "Учимся")
         }
-        if (data?.lowercase() == CALLBACK_STATISTICS && chatId != null) {
+        if (data?.lowercase() == CLICKED_STATISTICS && chatId != null) {
 
             val statistics = trainer.getStatistics()
 
@@ -49,7 +49,7 @@ fun main(args: Array<String>) {
             } else {
                 telegramBotService.sendMessage(
                     botToken, chatId, "Выучено ${statistics.learnedCount} из ${statistics.total} слов | " +
-                            "${statistics.learnedCount * 100 / statistics.total} %"
+                            "${statistics.percent} %"
                 )
 
             }
