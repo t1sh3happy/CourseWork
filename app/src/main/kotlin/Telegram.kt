@@ -1,4 +1,3 @@
-
 fun main(args: Array<String>) {
 
     val botToken: String = args[0]
@@ -7,7 +6,7 @@ fun main(args: Array<String>) {
     val messageRegex = Regex("\"text\":\"(.+?)\"")
     val chatIdRegex = Regex(""""chat":\{"id":\s*(\d+)""")
     val dataRegex = Regex("\"data\":\"(.+?)\"")
-    val learnWordTrainer = LearnWordTrainer()
+    LearnWordTrainer()
     val telegramBotService = TelegramBotService(botToken)
 
     while (true) {
@@ -36,7 +35,24 @@ fun main(args: Array<String>) {
             telegramBotService.sendMessage(botToken, chatId, "Учимся")
         }
         if (data?.lowercase() == CALLBACK_STATISTICS && chatId != null) {
-            telegramBotService.sendMessage(botToken, chatId, "Статистика")
+            val trainer = try {
+                LearnWordTrainer()
+            } catch (e: Exception) {
+                println("Невозможно загрузить словарь")
+                return
+            }
+            val statistics = trainer.getStatistics()
+
+            if (statistics.total == 0) {
+                telegramBotService.sendMessage(botToken, chatId, "Словарь пуст, возврат в меню")
+                break
+            } else {
+                telegramBotService.sendMessage(
+                    botToken, chatId, "Выучено ${statistics.learnedCount} из ${statistics.total} слов | " +
+                            "${statistics.learnedCount * 100 / statistics.total} %"
+                )
+
+            }
 
         }
     }
