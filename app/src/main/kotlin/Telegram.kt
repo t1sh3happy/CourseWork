@@ -13,13 +13,13 @@ fun main(args: Array<String>) {
         println("Невозможно загрузить словарь")
         return
     }
-    val statistics = trainer.getStatistics()
+
     val question = trainer.getNextQuestion()
 
 
 
     while (true) {
-
+        val statistics = trainer.getStatistics()
         Thread.sleep(2000)
         val updates: String = telegramBotService.getUpdates(updateId)
         val searchebleId = updateIdRegex.find(updates)?.groups?.get(1)?.value ?: continue
@@ -40,15 +40,15 @@ fun main(args: Array<String>) {
             telegramBotService.sendMenu(chatId)
         }
 
-        when (data?.lowercase()) {
+        when {
 
-            CLICKED_LEARN_WORDS -> {
+            data == CLICKED_LEARN_WORDS -> {
                 trainer.checkNextQuestionAndSend(trainer, telegramBotService, chatId)
 
 
             }
 
-            CLICKED_STATISTICS -> {
+            data == CLICKED_STATISTICS -> {
 
                 if (statistics.totalCount == 0) {
                     telegramBotService.sendMessage(chatId, "Словарь пуст, возврат в меню")
@@ -60,6 +60,15 @@ fun main(args: Array<String>) {
                 }
 
             }
+            data?.startsWith(CALLBACK_DATA_ANSWER_PREFIX) == true -> {
+            val useranswer = data.substringAfter("CALLBACK_DATA_ANSWER_PREFIX").toInt()
+            if (trainer.checkAnswer(useranswer)){
+                telegramBotService.sendMessage(chatId, "Правильно")
+            } else telegramBotService.sendMessage(chatId, "НЕправильно")
+
+
+            }
+
         }
     }
 

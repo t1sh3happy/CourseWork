@@ -71,7 +71,7 @@ class LearnWordTrainer(private val learnedAnswerCount: Int = 3) {
     ) {
         val question = trainer.getNextQuestion()
         if (question == null) {
-            telegramBotService.sendMessage(chatId, "Невозможно загрузить словарь")
+            telegramBotService.sendMessage(chatId, "Все слова в словаре выучены")
         } else telegramBotService.sendQuestion(chatId, question)
     }
 

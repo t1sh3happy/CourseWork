@@ -66,35 +66,21 @@ class TelegramBotService(private val botToken: String) {
         val urlSendQuestion: String = TELEGRAM_BASE_URL + botToken + "/sendMessage"
         val text = "Как переводится: ${question.correctAnswer.text}?"
 
+        val buttonsJson = question.variants.mapIndexed { index, word ->
+            """{"text":"${word.translate}","callback_data":"${CALLBACK_DATA_ANSWER_PREFIX}${index}"}"""
+        }
+
+        val rowJson = buttonsJson.chunked(2).joinToString("\n") { row ->
+            "[${row.joinToString(",")}]"
+        }
+
+
         val sendMenuBody = """
              {
                 "chat_id": $chatId,
                 "text": "$text",
                 "reply_markup": {
-                    "inline_keyboard": [
-                        [
-                        {
-                           "text": "${question.variants[0].translate}",
-                           "callback_data": "${CALLBACK_DATA_ANSWER_PREFIX}0"
-                        },
-                        {
-                           "text": "${question.variants[1].translate}",
-                           "callback_data": "${CALLBACK_DATA_ANSWER_PREFIX}1"
-                        }
-                        ]
-                        ,
-                        [
-                        {
-                           "text": "${question.variants[2].translate}",
-                           "callback_data": "${CALLBACK_DATA_ANSWER_PREFIX}2"
-                        },
-                        {
-                           "text": "${question.variants[3].translate}",
-                           "callback_data": "${CALLBACK_DATA_ANSWER_PREFIX}3"
-                        }
-                        ]
-                        
-                    ]
+                    "inline_keyboard": [$rowJson]
                 }
              }
         """.trimIndent()
