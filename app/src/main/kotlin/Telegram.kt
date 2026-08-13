@@ -60,11 +60,15 @@ fun main(args: Array<String>) {
                 }
 
             }
+
             data?.startsWith(CALLBACK_DATA_ANSWER_PREFIX) == true -> {
-            val useranswer = data.substringAfter("CALLBACK_DATA_ANSWER_PREFIX").toInt()
-            if (trainer.checkAnswer(useranswer)){
-                telegramBotService.sendMessage(chatId, "Правильно")
-            } else telegramBotService.sendMessage(chatId, "НЕправильно")
+                val useranswer = data.substringAfter(CALLBACK_DATA_ANSWER_PREFIX).toInt()
+                if (trainer.checkAnswer(useranswer)) {
+                    telegramBotService.sendMessage(chatId, "Правильно")
+                } else {
+                    telegramBotService.sendMessage(chatId, "НЕправильно")
+                }
+                trainer.checkNextQuestionAndSend(trainer, telegramBotService, chatId)
 
 
             }

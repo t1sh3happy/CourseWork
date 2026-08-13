@@ -70,7 +70,7 @@ class TelegramBotService(private val botToken: String) {
             """{"text":"${word.translate}","callback_data":"${CALLBACK_DATA_ANSWER_PREFIX}${index}"}"""
         }
 
-        val rowJson = buttonsJson.chunked(2).joinToString("\n") { row ->
+        val rowJson = buttonsJson.chunked(2).joinToString(",\n") { row ->
             "[${row.joinToString(",")}]"
         }
 
