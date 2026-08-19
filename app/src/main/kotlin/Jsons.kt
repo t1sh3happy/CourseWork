@@ -1,5 +1,5 @@
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.Json
 
 @Serializable
 data class TelegramResponse(
@@ -9,14 +9,14 @@ data class TelegramResponse(
 
 @Serializable
 data class Update(
-    val update_id: Long,
+    @SerialName("update_id") val updateId: Int,
     val message: Message? = null,
-    val callback_query: CallbackQuery? = null
+    @SerialName("callback_query") val callbackQuery: CallbackQuery? = null
 )
 
 @Serializable
 data class Message(
-    val message_id: Long,
+    @SerialName("message_id") val messageId: Long,
     val chat: Chat,
     val text: String? = null
 )

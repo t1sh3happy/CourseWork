@@ -1,38 +1,4 @@
-import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
-
-
-@Serializable
-data class TelegramResponse(
-    val ok: Boolean,
-    val result: List<Update>
-)
-
-@Serializable
-data class Update(
-    val update_id: Int,
-    val message: Message? = null,
-    val callback_query: CallbackQuery? = null
-)
-
-@Serializable
-data class Message(
-    val message_id: Long,
-    val chat: Chat,
-    val text: String? = null
-)
-
-@Serializable
-data class Chat(
-    val id: Long
-)
-
-@Serializable
-data class CallbackQuery(
-    val id: String,
-    val data: String? = null,
-    val message: Message? = null
-)
 
 fun main(args: Array<String>) {
     val botToken: String = args[0]
@@ -64,16 +30,16 @@ fun main(args: Array<String>) {
         if (response.result.isEmpty()) continue
 
         for (update in response.result) {
-            updateId = update.update_id + 1
+            updateId = update.updateId + 1
 
             val chatId = update.message?.chat?.id
-                ?: update.callback_query?.message?.chat?.id
+                ?: update.callbackQuery?.message?.chat?.id
                 ?: continue
 
             val message = update.message?.text
-            val data = update.callback_query?.data
+            val data = update.callbackQuery?.data
 
-            println("update_id=${update.update_id}, chatId=$chatId, message=$message, data=$data")
+            println("updateId=${update.updateId}, chatId=$chatId, message=$message, data=$data")
 
             if (message == "Hello") {
                 telegramBotService.sendMessage(chatId, "Hello")

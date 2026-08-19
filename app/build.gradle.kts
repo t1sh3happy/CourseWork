@@ -1,5 +1,6 @@
 plugins {
     id("buildsrc.convention.kotlin-jvm")
+    kotlin("plugin.serialization") version "2.2.20"
     application
 }
 
@@ -9,5 +10,5 @@ dependencies {
 }
 
 application {
-    mainClass = "TelegramKt"  // <-- точка входа для бота
+    mainClass = "TelegramKt"
 }

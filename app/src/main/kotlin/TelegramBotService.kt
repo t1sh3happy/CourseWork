@@ -1,3 +1,4 @@
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -11,23 +12,22 @@ const val CLICKED_STATISTICS = "statistic_click"
 const val TELEGRAM_BASE_URL = "https://api.telegram.org/bot"
 const val CALLBACK_DATA_ANSWER_PREFIX = "answer_"
 
-
 @Serializable
 data class SendMessageRequest(
-    val chat_id: Long,
+    @SerialName("chat_id") val chatId: Long,
     val text: String,
-    val reply_markup: ReplyMarkup? = null
+    @SerialName("reply_markup") val replyMarkup: ReplyMarkup? = null
 )
 
 @Serializable
 data class ReplyMarkup(
-    val inline_keyboard: List<List<InlineKeyboardButton>>
+    @SerialName("inline_keyboard") val inlineKeyboard: List<List<InlineKeyboardButton>>
 )
 
 @Serializable
 data class InlineKeyboardButton(
     val text: String,
-    val callback_data: String
+    @SerialName("callback_data") val callbackData: String
 )
 
 class TelegramBotService(private val botToken: String) {
@@ -44,7 +44,7 @@ class TelegramBotService(private val botToken: String) {
 
     fun sendMessage(chatId: Long, text: String) {
         val url = "$TELEGRAM_BASE_URL$botToken/sendMessage"
-        val body = SendMessageRequest(chat_id = chatId, text = text)
+        val body = SendMessageRequest(chatId = chatId, text = text)
         val jsonBody = json.encodeToString(body)
 
         val request = HttpRequest.newBuilder()
@@ -60,14 +60,14 @@ class TelegramBotService(private val botToken: String) {
         val url = "$TELEGRAM_BASE_URL$botToken/sendMessage"
         val buttons = listOf(
             listOf(
-                InlineKeyboardButton("Изучить слова", CLICKED_LEARN_WORDS),
-                InlineKeyboardButton("Статистика", CLICKED_STATISTICS)
+                InlineKeyboardButton(text = "Изучить слова", callbackData = CLICKED_LEARN_WORDS),
+                InlineKeyboardButton(text = "Статистика", callbackData = CLICKED_STATISTICS)
             )
         )
         val body = SendMessageRequest(
-            chat_id = chatId,
+            chatId = chatId,
             text = "Основное меню",
-            reply_markup = ReplyMarkup(buttons)
+            replyMarkup = ReplyMarkup(inlineKeyboard = buttons)
         )
         val jsonBody = json.encodeToString(body)
 
@@ -87,14 +87,14 @@ class TelegramBotService(private val botToken: String) {
         val buttons = question.variants.mapIndexed { index, word ->
             InlineKeyboardButton(
                 text = word.translate,
-                callback_data = "$CALLBACK_DATA_ANSWER_PREFIX$index"
+                callbackData = "$CALLBACK_DATA_ANSWER_PREFIX$index"
             )
         }.chunked(2)
 
         val body = SendMessageRequest(
-            chat_id = chatId,
+            chatId = chatId,
             text = text,
-            reply_markup = ReplyMarkup(buttons)
+            replyMarkup = ReplyMarkup(inlineKeyboard = buttons)
         )
         val jsonBody = json.encodeToString(body)
 
