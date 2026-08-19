@@ -1,9 +1,11 @@
 import java.io.File
 
+const val NUMBER_OF_ANSWERS = 4
+
 data class Statistics(
     val totalCount: Int,
     val learnedCount: Int,
-    val percent : Int,
+    val percent: Int,
 )
 
 data class Word(
@@ -18,22 +20,23 @@ data class Question(
 )
 
 class LearnWordTrainer(private val learnedAnswerCount: Int = 3) {
-
-    private var question: Question? = null
     private val dictionary = loadDictionary()
 
     fun getStatistics(): Statistics {
         val learnedCount = dictionary.filter { it.correctAnswersCount >= learnedAnswerCount }.size
         val totalCount = dictionary.size
-        val percent = if (learnedCount > 0) learnedCount * 100 / totalCount else 0
+
+        val percent = if (totalCount > 0) learnedCount * 100 / totalCount else 0
         return Statistics(totalCount, learnedCount, percent)
     }
 
     fun getNextQuestion(): Question? {
         val notLearnedList = dictionary.filter { it.correctAnswersCount < learnedAnswerCount }
+
         if (notLearnedList.isEmpty()) return null
         val correctAnswer = notLearnedList.random()
         val otherNotLearned = notLearnedList - correctAnswer
+
         val variants = if (otherNotLearned.size >= NUMBER_OF_ANSWERS - 1) {
             (listOf(correctAnswer) + otherNotLearned.shuffled().take(NUMBER_OF_ANSWERS - 1)).shuffled()
         } else {
@@ -45,43 +48,31 @@ class LearnWordTrainer(private val learnedAnswerCount: Int = 3) {
             (listOf(correctAnswer) + otherNotLearned + learnedExtra).shuffled()
         }
 
-        question = Question(variants = variants, correctAnswer = correctAnswer)
-        return question
+        return Question(variants = variants, correctAnswer = correctAnswer)
 
     }
 
-    fun checkAnswer(userAnswersIndex: Int?): Boolean {
+    fun checkAnswer(question: Question, userAnswersIndex: Int?): Boolean {
 
-        return question?.let {
-            val correctAnswerId = it.variants.indexOf(it.correctAnswer)
-            if (correctAnswerId == userAnswersIndex) {
-                it.correctAnswer.correctAnswersCount++
-                saveDictionary(dictionary)
-                true
-            } else {
-                false
-            }
-        } ?: false
-    }
+        val correctAnswerId = question.variants.indexOf(question.correctAnswer)
 
-    fun checkNextQuestionAndSend(
-        trainer: LearnWordTrainer,
-        telegramBotService: TelegramBotService,
-        chatId: Long
-    ) {
-        val question = trainer.getNextQuestion()
-        if (question == null) {
-            telegramBotService.sendMessage(chatId, "Все слова в словаре выучены")
-        } else telegramBotService.sendQuestion(chatId, question)
-    }
-
-    fun getCurrentQuestionHint(): String? {
-        return question?.let {
-            "${it.correctAnswer.text} - это ${it.correctAnswer.translate}"
+        return if (correctAnswerId == userAnswersIndex) {
+            question.correctAnswer.correctAnswersCount++
+            saveDictionary(dictionary)
+            true
+        } else {
+            false
         }
     }
 
+
+    fun getCurrentQuestionHint(question: Question): String {
+        return "${question.correctAnswer.text} - это ${question.correctAnswer.translate}"
+    }
+
+
     private fun loadDictionary(): MutableList<Word> {
+
         try {
             val wordsFile = File("words.txt")
             val dictionary = mutableListOf<Word>()
@@ -112,3 +103,4 @@ class LearnWordTrainer(private val learnedAnswerCount: Int = 3) {
         wordsFile.writeText(content)
     }
 }
+
