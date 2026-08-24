@@ -75,6 +75,12 @@ class LearnWordTrainer(private val learnedAnswerCount: Int = 3) {
         } else telegramBotService.sendQuestion(chatId, question)
     }
 
+    fun getCurrentQuestionHint(): String? {
+        return question?.let {
+            "${it.correctAnswer.text} - это ${it.correctAnswer.translate}"
+        }
+    }
+
     private fun loadDictionary(): MutableList<Word> {
         try {
             val wordsFile = File("words.txt")
