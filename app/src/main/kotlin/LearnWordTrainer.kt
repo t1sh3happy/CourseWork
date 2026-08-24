@@ -19,7 +19,7 @@ data class Question(
     val correctAnswer: Word,
 )
 
-class LearnWordTrainer(private val learnedAnswerCount: Int = 3) {
+class LearnWordTrainer(private val chatId: Long, private val learnedAnswerCount: Int = 3) {
     private val dictionary = loadDictionary()
 
     fun getStatistics(): Statistics {
@@ -72,6 +72,7 @@ class LearnWordTrainer(private val learnedAnswerCount: Int = 3) {
 
 
     private fun loadDictionary(): MutableList<Word> {
+        val wordsFile = File("words_$chatId.txt")
 
         try {
             val wordsFile = File("words.txt")
@@ -96,7 +97,7 @@ class LearnWordTrainer(private val learnedAnswerCount: Int = 3) {
     }
 
     private fun saveDictionary(dictionary: List<Word>) {
-        val wordsFile: File = File("words.txt")
+        val wordsFile = File("words_$chatId.txt")
         val content =
             dictionary.joinToString(separator = "\n")
             { word -> "${word.text}|${word.translate}|${word.correctAnswersCount}" }
