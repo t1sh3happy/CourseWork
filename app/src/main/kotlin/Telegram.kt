@@ -1,12 +1,12 @@
-fun main(args: Array<String>) {
+import kotlinx.serialization.json.Json
 
+fun main(args: Array<String>) {
     val botToken: String = args[0]
     var updateId = 0
-    val updateIdRegex = Regex(""""update_id":\s*(\d+)""")
-    val messageRegex = Regex("\"text\":\"(.+?)\"")
-    val chatIdRegex = Regex(""""chat":\{"id":\s*(\d+)""")
-    val dataRegex = Regex("\"data\":\"(.+?)\"")
+
+    val json = Json { ignoreUnknownKeys = true }
     val telegramBotService = TelegramBotService(botToken)
+
     val trainer = try {
         LearnWordTrainer()
     } catch (e: Exception) {
@@ -14,66 +14,101 @@ fun main(args: Array<String>) {
         return
     }
 
-
-
+    val questionByChatId = mutableMapOf<Long, Question>()
 
     while (true) {
-        val statistics = trainer.getStatistics()
         Thread.sleep(2000)
         val updates: String = telegramBotService.getUpdates(updateId)
-        val searchebleId = updateIdRegex.find(updates)?.groups?.get(1)?.value ?: continue
-        updateId = searchebleId.toInt() + 1
-        val chatId = chatIdRegex.find(updates)?.groups?.get(1)?.value?.toLong() ?: continue
-        val message = messageRegex.find(updates)?.groups?.get(1)?.value
-        val data = dataRegex.find(updates)?.groups?.get(1)?.value
-        var text: String
 
-        println(updates)
-
-        if (message == "Hello") {
-            text = "Hello"
-            telegramBotService.sendMessage(chatId, text)
+        val response = try {
+            json.decodeFromString<TelegramResponse>(updates)
+        } catch (e: Exception) {
+            println("Ошибка парсинга JSON: ${e.message}")
+            continue
         }
 
-        if (message == "/start" && chatId != null) {
-            telegramBotService.sendMenu(chatId)
-        }
+        if (response.result.isEmpty()) continue
 
-        when {
+        for (update in response.result) {
+            updateId = update.updateId + 1
 
-            data == CLICKED_LEARN_WORDS -> {
-                trainer.checkNextQuestionAndSend(trainer, telegramBotService, chatId)
+            val chatId = update.message?.chat?.id
+                ?: update.callbackQuery?.message?.chat?.id
+                ?: continue
 
+            val message = update.message?.text
+            val data = update.callbackQuery?.data
 
+            println("updateId=${update.updateId}, chatId=$chatId, message=$message, data=$data")
+
+            if (message == "Hello") {
+                telegramBotService.sendMessage(chatId, "Hello")
             }
 
-            data == CLICKED_STATISTICS -> {
+            if (message == "/start") {
+                telegramBotService.sendMenu(chatId)
+            }
 
-                if (statistics.totalCount == 0) {
-                    telegramBotService.sendMessage(chatId, "Словарь пуст, возврат в меню")
-                } else {
-                    telegramBotService.sendMessage(
-                        chatId, "Выучено ${statistics.learnedCount} из ${statistics.totalCount} слов | " +
-                                "${statistics.percent} %"
-                    )
+            when {
+                data == CLICKED_LEARN_WORDS -> {
+                    val question = trainer.getNextQuestion()
+                    if (question == null) {
+                        telegramBotService.sendMessage(chatId, "Все слова в словаре выучены")
+                    } else {
+                        questionByChatId[chatId] = question
+                        telegramBotService.sendQuestion(chatId, question)
+                    }
                 }
 
-            }
-
-            data?.startsWith(CALLBACK_DATA_ANSWER_PREFIX) == true -> {
-                val userAnswerIndex = data.substringAfter(CALLBACK_DATA_ANSWER_PREFIX).toInt()
-                val isCorrect = trainer.checkAnswer(userAnswerIndex)
-                if (isCorrect) {
-                    telegramBotService.sendMessage(chatId, "Правильно!")
-                } else {
-                    telegramBotService.sendMessage(chatId, "Неправильно! ${trainer.getCurrentQuestionHint()}")
+                data == CLICKED_STATISTICS -> {
+                    val statistics = trainer.getStatistics()
+                    if (statistics.totalCount == 0) {
+                        telegramBotService.sendMessage(chatId, "Словарь пуст, возврат в меню")
+                    } else {
+                        telegramBotService.sendMessage(
+                            chatId,
+                            "Выучено ${statistics.learnedCount} из ${statistics.totalCount} слов | ${statistics.percent} %"
+                        )
+                    }
                 }
-                trainer.checkNextQuestionAndSend(trainer, telegramBotService, chatId)
 
+                data?.startsWith(CALLBACK_DATA_ANSWER_PREFIX) == true -> {
+                    val userAnswerIndex = data.substringAfter(CALLBACK_DATA_ANSWER_PREFIX).toIntOrNull()
 
+                    if (userAnswerIndex == null) {
+                        telegramBotService.sendMessage(chatId, "Некорректный ответ")
+                        continue
+                    }
+
+                    val question = questionByChatId[chatId]
+
+                    if (question == null) {
+                        telegramBotService.sendMessage(chatId, "Вопрос устарел. Нажмите «Изучить слова».")
+                        continue
+                    }
+
+                    val isCorrect = trainer.checkAnswer(question, userAnswerIndex)
+
+                    if (isCorrect) {
+                        telegramBotService.sendMessage(chatId, "Правильно!")
+                    } else {
+                        telegramBotService.sendMessage(
+                            chatId,
+                            "Неправильно! ${trainer.getCurrentQuestionHint(question)}"
+                        )
+                    }
+
+                    questionByChatId.remove(chatId)
+
+                    val nextQuestion = trainer.getNextQuestion()
+                    if (nextQuestion == null) {
+                        telegramBotService.sendMessage(chatId, "Все слова в словаре выучены")
+                    } else {
+                        questionByChatId[chatId] = nextQuestion
+                        telegramBotService.sendQuestion(chatId, nextQuestion)
+                    }
+                }
             }
-
         }
     }
-
 }
