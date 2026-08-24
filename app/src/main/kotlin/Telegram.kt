@@ -7,13 +7,7 @@ fun main(args: Array<String>) {
     val json = Json { ignoreUnknownKeys = true }
     val telegramBotService = TelegramBotService(botToken)
 
-    val trainer = try {
-        LearnWordTrainer()
-    } catch (e: Exception) {
-        println("Невозможно загрузить словарь")
-        return
-    }
-
+    val trainersByChatId = mutableMapOf<Long, LearnWordTrainer>()
     val questionByChatId = mutableMapOf<Long, Question>()
 
     while (true) {
@@ -40,6 +34,13 @@ fun main(args: Array<String>) {
             val data = update.callbackQuery?.data
 
             println("updateId=${update.updateId}, chatId=$chatId, message=$message, data=$data")
+
+            val trainer = try {
+                trainersByChatId.getOrPut(chatId) { LearnWordTrainer(chatId) }
+            } catch (e: Exception) {
+                telegramBotService.sendMessage(chatId, "Невозможно загрузить словарь")
+                continue
+            }
 
             if (message == "Hello") {
                 telegramBotService.sendMessage(chatId, "Hello")
